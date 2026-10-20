@@ -7,9 +7,7 @@ app = FastAPI(title="CIVILIZATION API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://roalay67-afk.github.io"
-    ],
+    allow_origins=["https://roalay67-afk.github.io"],
     allow_credentials=False,
     allow_methods=["GET"],
     allow_headers=["*"],
@@ -58,32 +56,29 @@ async def gifts():
 
         return {"gifts": items, "source": "MRKT"}
 
-
     except httpx.HTTPStatusError as e:
         return {
             "gifts": [],
             "source": "MRKT",
-            "error": f"MRKT вернул HTTP {e.response.status_code}"
+            "error": f"MRKT вернул HTTP {e.response.status_code}",
         }
     except httpx.RequestError as e:
         return {
             "gifts": [],
             "source": "MRKT",
-            "error": f"Ошибка соединения: {type(e).__name__}"
+            "error": f"Ошибка соединения: {type(e).__name__}",
         }
     except Exception as e:
         return {
             "gifts": [],
             "source": "MRKT",
-            "error": f"Ошибка обработки: {type(e).__name__}"
+            "error": f"Ошибка обработки: {type(e).__name__}",
         }
-```
-
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         app,
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", "10000"))
+        port=int(os.environ.get("PORT", "10000")),
     )
