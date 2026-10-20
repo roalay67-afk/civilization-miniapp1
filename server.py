@@ -58,12 +58,32 @@ async def gifts():
 
         return {"gifts": items, "source": "MRKT"}
 
-    except Exception:
+
+    except httpx.HTTPStatusError as e:
         return {
             "gifts": [],
             "source": "MRKT",
-            "error": "Не удалось получить каталог. Проверь доступность API."
+            "error": f"MRKT вернул HTTP {e.response.status_code}"
         }
+    except httpx.RequestError as e:
+        return {
+            "gifts": [],
+            "source": "MRKT",
+            "error": f"Ошибка соединения: {type(e).__name__}"
+        }
+    except Exception as e:
+        return {
+            "gifts": [],
+            "source": "MRKT",
+            "error": f"Ошибка обработки: {type(e).__name__}"
+        }
+```
+
+Сохрани файл через **Commit changes** и дождись `Live` в Render.
+
+Затем снова открой [проверку каталога](https://civilization-miniapp1-2.onrender.com/api/gifts) и пришли мне точный JSON-ответ.
+
+Например, `HTTP 401` укажет на проблему с авторизацией, а `HTTP 404` — на неверный адрес или маршрут. По результату выберем следующий шаг. **Не присылай API-ключи и токены.**
 
 if __name__ == "__main__":
     import uvicorn
