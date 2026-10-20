@@ -2,246 +2,868 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>CIVILIZATION</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-:root{--bg:#0b0d13;--panel:#151923;--panel2:#1c2130;--text:#f4f5fa;--muted:#9299ac;--accent:#a78bfa;--line:#292e3d}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;padding:18px 15px 92px}
-button,input{font:inherit}
-button{cursor:pointer}
-header{display:flex;align-items:center;gap:12px;margin:3px 0 22px}
-.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,#a78bfa,#5141a0);display:grid;place-items:center;font-size:24px}
-h1{font-size:21px;margin:0;letter-spacing:1px}
-.sub{color:var(--muted);font-size:11px;margin-top:5px;letter-spacing:1.2px}
-h2{font-size:18px;margin:0 0 14px}
-.profile{background:linear-gradient(150deg,#252139,#171a27 65%);border:1px solid #39324e;border-radius:23px;padding:22px 16px;text-align:center}
-.avatar-wrap{width:124px;height:124px;margin:0 auto 14px;position:relative;display:grid;place-items:center}
-.avatar-ring{position:absolute;inset:0;border:3px solid var(--accent);border-radius:50%;box-shadow:0 0 25px #a78bfa55}
-.avatar{width:102px;height:102px;border-radius:50%;object-fit:cover;background:#303547;display:grid;place-items:center;font-size:42px;overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.ring-gift{position:absolute;font-size:24px;filter:drop-shadow(0 2px 4px #000);z-index:2}
-.name{font-weight:700;font-size:21px}
-.username{color:var(--muted);font-size:13px;margin-top:5px}
-.stats{display:flex;justify-content:center;gap:28px;margin:18px 0 3px}
-.stat strong{display:block;font-size:19px}.stat span{color:var(--muted);font-size:11px}
-.btn{border:0;border-radius:13px;padding:13px 15px;font-weight:700;color:white;background:linear-gradient(120deg,#9274f0,#6c54c7)}
-.btn.secondary{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
-.btn.full{width:100%;margin-top:17px}
-.section{margin-top:27px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.muted{color:var(--muted);font-size:13px;line-height:1.45}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.gift{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:12px;min-width:0}
-.gift-art{height:100px;border-radius:12px;background:radial-gradient(circle at 50% 35%,#484064,#242333 72%);display:grid;place-items:center;font-size:48px;position:relative}
-.gift-name{font-weight:700;font-size:14px;margin-top:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rarity{font-size:11px;color:#c4b5fd;margin-top:5px}
-.gift button{width:100%;margin-top:11px;padding:10px 5px;font-size:12px}
-.tabs{position:fixed;bottom:0;left:0;right:0;background:#10131bee;backdrop-filter:blur(15px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 5px calc(10px + env(safe-area-inset-bottom));z-index:5}
-.tab{background:none;border:0;color:var(--muted);font-size:11px;display:grid;gap:5px;justify-items:center;min-width:62px}
-.tab span{font-size:21px}.tab.active{color:var(--accent)}
-.page{display:none}.page.active{display:block}
-.empty{padding:25px 15px;border:1px dashed #383d4d;border-radius:17px;text-align:center;color:var(--muted);grid-column:1/-1}
-.search{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--text);margin-bottom:13px;outline:none}
-.pill{font-size:11px;border-radius:20px;padding:5px 8px;background:#2c2741;color:#d6c8ff}
-.actions{display:flex;gap:8px;margin-top:10px}.actions button{flex:1}
-.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:13px}
-</style>
-</head>
-<body>
-<header>
-  <div class="logo">🏛️</div>
-  <div><h1>CIVILIZATION</h1><div class="sub">YOUR PROFILE. YOUR COLLECTION.</div></div>
-</header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#050505">
+  <title>CIVILIZATION</title>
 
-<main>
-  <section class="page active" id="profilePage">
-    <div class="profile">
-      <div class="avatar-wrap" id="avatarWrap">
-        <div class="avatar-ring"></div>
-        <div class="avatar" id="avatar">👤</div>
-      </div>
-      <div class="name" id="displayName">Гость</div>
-      <div class="username" id="displayUsername">@telegram_user</div>
-      <div class="stats">
-        <div class="stat"><strong id="giftCount">0</strong><span>Подарков</span></div>
-        <div class="stat"><strong id="pinnedCount">0</strong><span>Закреплено</span></div>
-      </div>
-      <button class="btn full" onclick="go('catalogPage')">＋ Добавить NFT-подарок</button>
-    </div>
-    <div class="section">
-      <div class="row"><h2>Моя коллекция</h2><span class="pill" id="collectionLabel">0 предметов</span></div>
-      <div class="grid" id="collection"></div>
-    </div>
-    <p class="note">Предметы в этой версии — виртуальные украшения профиля. Они не добавляются в реальный профиль Telegram и не являются подтверждением владения NFT.</p>
-  </section>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <section class="page" id="catalogPage">
-    <h2>Каталог подарков</h2>
-    <p class="muted">Выбирай предметы для виртуальной коллекции CIVILIZATION.</p>
-    <input class="search" id="search" placeholder="Поиск подарка..." oninput="renderCatalog()">
-    <div class="grid" id="catalog"></div>
-    <p class="note">Демонстрационный каталог. Реальные изображения и актуальные данные MRKT подключаются отдельно при наличии разрешённого источника.</p>
-  </section>
-
-  <section class="page" id="settingsPage">
-    <h2>Настройки</h2>
-    <div class="gift">
-      <div class="row"><strong>Цвет оформления</strong><span class="pill">Профиль</span></div>
-      <p class="muted">Выбери цвет кольца вокруг аватара.</p>
-      <div class="actions">
-        <button class="btn" onclick="setColor('#a78bfa')">Фиолетовый</button>
-        <button class="btn secondary" onclick="setColor('#55d6be')">Бирюзовый</button>
-        <button class="btn secondary" onclick="setColor('#f0b45a')">Золотой</button>
-      </div>
-    </div>
-    <div class="gift" style="margin-top:12px">
-      <strong>Данные на устройстве</strong>
-      <p class="muted">В первой версии коллекция сохраняется в памяти браузера этого устройства.</p>
-      <button class="btn secondary full" onclick="resetCollection()">Очистить коллекцию</button>
-    </div>
-  </section>
-</main>
-
-<nav class="tabs">
-  <button class="tab active" id="tab-profilePage" onclick="go('profilePage')"><span>👤</span>Профиль</button>
-  <button class="tab" id="tab-catalogPage" onclick="go('catalogPage')"><span>🎁</span>Каталог</button>
-  <button class="tab" id="tab-settingsPage" onclick="go('settingsPage')"><span>⚙️</span>Настройки</button>
-</nav>
-
-<script>
-const tg = window.Telegram?.WebApp;
-tg?.ready();
-tg?.expand();
-
-const gifts = [
- {id:"rose",name:"Eternal Rose",emoji:"🌹",rarity:"Коллекционный"},
- {id:"bunny",name:"Jelly Bunny",emoji:"🐰",rarity:"Редкий"},
- {id:"cake",name:"Homemade Cake",emoji:"🎂",rarity:"Коллекционный"},
- {id:"star",name:"Diamond Star",emoji:"💎",rarity:"Эпический"},
- {id:"pepe",name:"Plush Pepe",emoji:"🐸",rarity:"Коллекционный"},
- {id:"cap",name:"Durov's Cap",emoji:"🧢",rarity:"Редкий"},
- {id:"duck",name:"Toy Bear",emoji:"🧸",rarity:"Обычный"},
- {id:"moon",name:"Moon Pendant",emoji:"🌙",rarity:"Эпический"}
-];
-
-const storageKey = "civilization_collection_v1";
-let collection = [];
-try { collection = JSON.parse(localStorage.getItem(storageKey) || "[]"); } catch(e) {}
-let pinnedId = localStorage.getItem("civilization_pinned") || "";
-let ringColor = localStorage.getItem("civilization_color") || "#a78bfa";
-
-function save(){
- localStorage.setItem(storageKey, JSON.stringify(collection));
- localStorage.setItem("civilization_pinned", pinnedId);
- localStorage.setItem("civilization_color", ringColor);
-}
-function getGift(id){return gifts.find(g=>g.id===id);}
-function go(id){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- document.getElementById(id).classList.add("active");
- document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
- document.getElementById("tab-"+id).classList.add("active");
- if(id==="catalogPage") renderCatalog();
- if(id==="profilePage") renderCollection();
-}
-function addGift(id){
- if(collection.includes(id)){alert("Этот подарок уже есть в коллекции.");return;}
- collection.push(id);save();renderAll();go("profilePage");
-}
-function togglePin(id){
- pinnedId = pinnedId===id ? "" : id;
- save();renderAll();
-}
-function removeGift(id){
- collection=collection.filter(x=>x!==id);
- if(pinnedId===id)pinnedId="";
- save();renderAll();
-}
-function giftCard(g,owned){
- const isPinned = pinnedId===g.id;
- return `<article class="gift">
-  <div class="gift-art">${g.emoji}${isPinned?'<span style="position:absolute;right:8px;top:7px;font-size:14px">📌</span>':''}</div>
-  <div class="gift-name">${g.name}</div>
-  <div class="rarity">${g.rarity}</div>
-  ${owned?`<div class="actions">
-   <button class="btn ${isPinned?'secondary':''}" onclick="togglePin('${g.id}')">${isPinned?'Открепить':'Закрепить'}</button>
-   <button class="btn secondary" onclick="removeGift('${g.id}')">✕</button>
-  </div>`:`<button class="btn" onclick="addGift('${g.id}')">Добавить</button>`}
- </article>`;
-}
-function renderCatalog(){
- const q=(document.getElementById("search")?.value||"").toLowerCase();
- const list=gifts.filter(g=>g.name.toLowerCase().includes(q)&&!collection.includes(g.id));
- document.getElementById("catalog").innerHTML=list.length?list.map(g=>giftCard(g,false)).join(""):'<div class="empty">Ничего не найдено или все подарки добавлены.</div>';
-}
-function renderCollection(){
- const list=collection.map(getGift).filter(Boolean);
- document.getElementById("collection").innerHTML=list.length?list.map(g=>giftCard(g,true)).join(""):'<div class="empty">Коллекция пока пустая.<br><br>Нажми «Добавить NFT-подарок», чтобы начать.</div>';
- document.getElementById("giftCount").textContent=list.length;
- document.getElementById("pinnedCount").textContent=pinnedId&&collection.includes(pinnedId)?1:0;
- document.getElementById("collectionLabel").textContent=list.length+" предметов";
- renderAvatar();
-}
-function renderAvatar(){
- const user=tg?.initDataUnsafe?.user;
- const avatar=document.getElementById("avatar");
- if(user?.photo_url){
-  avatar.innerHTML=`<img src="${user.photo_url}" alt="Аватар">`;
- } else {
-  avatar.textContent=(user?.first_name||"👤").slice(0,1);
- }
- const wrap=document.getElementById("avatarWrap");
- wrap.querySelectorAll(".ring-gift").forEach(e=>e.remove());
- document.querySelector(".avatar-ring").style.borderColor=ringColor;
- const g=getGift(pinnedId);
- if(g&&collection.includes(pinnedId)){
-  const ornament=document.createElement("div");
-  ornament.className="ring-gift";ornament.textContent=g.emoji;
-  ornament.style.top="-7px";ornament.style.right="0px";
-  wrap.appendChild(ornament);
- }
-}
-function renderUser(){
- const user=tg?.initDataUnsafe?.user;
- if(user){
-  document.getElementById("displayName").textContent=[user.first_name,user.last_name].filter(Boolean).join(" ");
-  document.getElementById("displayUsername").textContent=user.username?"@"+user.username:"Профиль Telegram";
- } else {
-  document.getElementById("displayName").textContent="Предпросмотр";
-  document.getElementById("displayUsername").textContent="Открой Mini App в Telegram";
- }
-}
-function renderAll(){renderCollection();renderCatalog();}
-function setColor(color){ringColor=color;save();renderAvatar();}
-function resetCollection(){
- if(!confirm("Удалить все подарки из коллекции?"))return;
- collection=[];pinnedId="";save();renderAll();
-}
-renderUser();
-renderAll();
-
-const API_URL = "https://civilization-miniapp1-2.onrender.com";
-
-async function loadGiftsFromServer() {
-  try {
-    const response = await fetch(`${API_URL}/api/gifts`);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel2: #191919;
+      --text: #f5f5f5;
+      --muted: #929292;
+      --silver: #dedede;
+      --line: #303030;
     }
 
-    const data = await response.json();
-    console.log("CIVILIZATION: сервер подключён", data);
-  } catch (error) {
-    console.error("Ошибка подключения к серверу:", error);
-  }
-}
+    * { box-sizing: border-box; }
 
-loadGiftsFromServer();
-</script>
+    html {
+      background: var(--bg);
+      color-scheme: dark;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 18px 15px 100px;
+      background:
+        radial-gradient(ellipse at top, #171717 0%, #080808 42%, #030303 100%);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 3px 0 24px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #080808;
+      font-size: 24px;
+      font-weight: 900;
+      background: linear-gradient(145deg, #eee, #777 55%, #292929);
+      border: 1px solid #c9c9c9;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+
+    .sub {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; animation: appear .2s ease-out; }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile {
+      padding: 22px 16px;
+      text-align: center;
+      border: 1px solid #414141;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #191919, #0b0b0b 70%);
+      box-shadow: 0 12px 35px #00000070;
+    }
+
+    .avatar-wrap {
+      width: 124px;
+      height: 124px;
+      margin: 0 auto 14px;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--silver);
+      border-radius: 50%;
+      box-shadow: 0 0 18px #ffffff18;
+    }
+
+    .avatar {
+      width: 102px;
+      height: 102px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid #505050;
+      background: #202020;
+      font-size: 40px;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ring-gift {
+      position: absolute;
+      z-index: 2;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #555;
+      border-radius: 50%;
+      background: #171717;
+      font-size: 16px;
+      box-shadow: 0 2px 8px #000;
+    }
+
+    .name {
+      font-size: 21px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .username {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin: 18px 0 3px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 19px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .btn {
+      padding: 12px 14px;
+      color: #080808;
+      font-weight: 700;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f2f2f2, #b7b7b7 55%, #888);
+      transition: filter .15s, transform .15s;
+    }
+
+    .btn:active { transform: scale(.98); filter: brightness(.9); }
+
+    .btn.secondary {
+      color: #e4e4e4;
+      border-color: #424242;
+      background: linear-gradient(145deg, #202020, #101010);
+    }
+
+    .btn.full { width: 100%; margin-top: 17px; }
+
+    .section { margin-top: 28px; }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .gift {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid #303030;
+      border-radius: 17px;
+      background: linear-gradient(150deg, #171717, #0c0c0c);
+      box-shadow: 0 8px 20px #00000025;
+    }
+
+    .gift-art {
+      height: 100px;
+      padding: 8px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid #333;
+      border-radius: 12px;
+      background: radial-gradient(circle at 50% 35%, #3b3b3b, #202020 52%, #111);
+      text-align: center;
+    }
+
+    .gift-art .gift-icon {
+      font-size: 40px;
+    }
+
+    .gift-art .gift-id {
+      color: #aaa;
+      font-size: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .gift-name {
+      margin-top: 11px;
+      font-size: 14px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .rarity {
+      min-height: 28px;
+      margin-top: 5px;
+      color: #bdbdbd;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .gift button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px 5px;
+      font-size: 12px;
+    }
+
+    .search {
+      width: 100%;
+      margin-bottom: 13px;
+      padding: 13px;
+      color: var(--text);
+      border: 1px solid #383838;
+      border-radius: 12px;
+      outline: none;
+      background: #101010;
+    }
+
+    .search:focus { border-color: #bdbdbd; }
+    .search::placeholder { color: #777; }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 25px 15px;
+      color: #929292;
+      text-align: center;
+      line-height: 1.5;
+      border: 1px dashed #383838;
+      border-radius: 17px;
+      background: #0d0d0d;
+    }
+
+    .pill {
+      padding: 5px 8px;
+      color: #dedede;
+      font-size: 11px;
+      border: 1px solid #414141;
+      border-radius: 20px;
+      background: #1a1a1a;
+      white-space: nowrap;
+    }
+
+    .note {
+      margin-top: 13px;
+      color: #777;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .tabs {
+      position: fixed;
+      z-index: 5;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 5px calc(10px + env(safe-area-inset-bottom));
+      border-top: 1px solid #303030;
+      background: #080808f5;
+      box-shadow: 0 -8px 25px #00000050;
+      backdrop-filter: blur(18px);
+    }
+
+    .tab {
+      min-width: 62px;
+      padding: 2px 8px;
+      display: grid;
+      justify-items: center;
+      gap: 5px;
+      color: #777;
+      font-size: 11px;
+      border: 0;
+      background: none;
+    }
+
+    .tab span { font-size: 21px; filter: grayscale(1); }
+    .tab.active { color: #f2f2f2; }
+    .tab.active span { filter: grayscale(1) brightness(1.5); }
+
+    .status {
+      margin: 12px 0;
+      color: #aaa;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 600px) {
+      body { max-width: 680px; margin: 0 auto; }
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">C</div>
+    <div>
+      <h1>CIVILIZATION</h1>
+      <div class="sub">TELEGRAM GIFT COLLECTION</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page active" id="page-profile">
+      <div class="profile">
+        <div class="avatar-wrap" id="avatarWrap">
+          <div class="avatar-ring"></div>
+          <div class="avatar" id="avatar">👤</div>
+        </div>
+
+        <div class="name" id="profileName">Пользователь</div>
+        <div class="username" id="profileUsername">@telegram_user</div>
+
+        <div class="stats">
+          <div class="stat">
+            <strong id="collectionCount">0</strong>
+            <span>Подарков</span>
+          </div>
+          <div class="stat">
+            <strong id="pinnedCount">0</strong>
+            <span>Закреплено</span>
+          </div>
+        </div>
+
+        <button class="btn full" onclick="showPage('catalog')">
+          Открыть каталог
+        </button>
+      </div>
+
+      <div class="section">
+        <div class="row">
+          <h2>Закреплённые подарки</h2>
+          <span class="pill" id="pinnedLabel">0 / 6</span>
+        </div>
+        <div class="muted">
+          Выбери подарки в коллекции и закрепи их вокруг аватарки.
+        </div>
+        <div class="grid" id="pinnedPreview" style="margin-top:13px"></div>
+      </div>
+
+      <div class="section">
+        <h2>О CIVILIZATION</h2>
+        <div class="muted">
+          Твоя коллекция Telegram-подарков в минималистичном чёрно-серебристом стиле.
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-catalog">
+      <div class="row">
+        <h2>Каталог</h2>
+        <button class="btn secondary" onclick="loadGifts()">Обновить</button>
+      </div>
+
+      <input
+        class="search"
+        id="searchInput"
+        placeholder="Поиск по названию или ID..."
+        autocomplete="off"
+      >
+
+      <div class="status" id="catalogStatus">Загружаем каталог...</div>
+      <div class="grid" id="catalog"></div>
+
+      <div class="note">
+        Каталог загружается с сервера. Доступность и стоимость подарков
+        определяются данными, которые возвращает Telegram.
+      </div>
+    </section>
+
+    <section class="page" id="page-collection">
+      <div class="row">
+        <h2>Моя коллекция</h2>
+        <span class="pill" id="collectionLabel">0 подарков</span>
+      </div>
+
+      <div class="muted" style="margin-bottom:14px">
+        Добавляй подарки из каталога. Закреплённые отображаются у аватарки.
+      </div>
+
+      <div class="grid" id="collection"></div>
+    </section>
+
+    <section class="page" id="page-settings">
+      <h2>Настройки</h2>
+
+      <div class="profile" style="text-align:left">
+        <div style="font-weight:700;margin-bottom:8px">Профиль Telegram</div>
+        <div class="muted">
+          Имя и аватар берутся из Telegram, если приложение открыто внутри Telegram.
+        </div>
+        <button class="btn secondary full" onclick="updateTelegramProfile()">
+          Обновить профиль
+        </button>
+      </div>
+
+      <div class="section profile" style="text-align:left">
+        <div style="font-weight:700;margin-bottom:8px">Данные приложения</div>
+        <div class="muted">
+          Коллекция сохраняется в локальном хранилище браузера на этом устройстве.
+          Она не синхронизируется автоматически между разными устройствами.
+        </div>
+        <button class="btn secondary full" onclick="clearCollection()">
+          Очистить коллекцию
+        </button>
+      </div>
+
+      <div class="section">
+        <div class="muted" id="serverStatus">Проверяем соединение с сервером...</div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs">
+    <button class="tab active" data-page="profile" onclick="showPage('profile')">
+      <span>◉</span>Профиль
+    </button>
+    <button class="tab" data-page="catalog" onclick="showPage('catalog')">
+      <span>▦</span>Каталог
+    </button>
+    <button class="tab" data-page="collection" onclick="showPage('collection')">
+      <span>◇</span>Коллекция
+    </button>
+    <button class="tab" data-page="settings" onclick="showPage('settings')">
+      <span>⚙</span>Настройки
+    </button>
+  </nav>
+
+  <script>
+    const API_URL = "https://civilization-miniapp1-2.onrender.com";
+
+    const tg = window.Telegram?.WebApp;
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.setHeaderColor("#050505");
+      tg.setBackgroundColor("#050505");
+    }
+
+    let gifts = [];
+    let catalogError = "";
+    let activePage = "profile";
+
+    const STORAGE_KEY = "civilization_collection_v1";
+
+    function readCollection() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(data) ? data : [];
+      } catch {
+        return [];
+      }
+    }
+
+    let collection = readCollection();
+
+    function saveCollection() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collection));
+      renderAll();
+    }
+
+    function getGift(id) {
+      return gifts.find(g => String(g.id) === String(id));
+    }
+
+    function isCollected(id) {
+      return collection.some(g => String(g.id) === String(id));
+    }
+
+    function isPinned(id) {
+      const item = collection.find(g => String(g.id) === String(id));
+      return Boolean(item && item.pinned);
+    }
+
+    function showPage(page) {
+      activePage = page;
+
+      document.querySelectorAll(".page").forEach(el => {
+        el.classList.toggle("active", el.id === "page-" + page);
+      });
+
+      document.querySelectorAll(".tab").forEach(el => {
+        el.classList.toggle("active", el.dataset.page === page);
+      });
+
+      if (page === "collection") renderCollection();
+      if (page === "catalog") renderCatalog();
+    }
+
+    function updateTelegramProfile() {
+      const user = tg?.initDataUnsafe?.user;
+
+      if (!user) {
+        document.getElementById("profileName").textContent = "Пользователь";
+        document.getElementById("profileUsername").textContent =
+          "Открой приложение через Telegram";
+        document.getElementById("avatar").textContent = "👤";
+        return;
+      }
+
+      const fullName = [user.first_name, user.last_name]
+        .filter(Boolean).join(" ");
+
+      document.getElementById("profileName").textContent =
+        fullName || "Пользователь";
+
+      document.getElementById("profileUsername").textContent =
+        user.username ? "@" + user.username : "Telegram-профиль";
+
+      const avatar = document.getElementById("avatar");
+
+      if (user.photo_url) {
+        avatar.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = user.photo_url;
+        img.alt = "Аватар Telegram";
+        avatar.appendChild(img);
+      } else {
+        avatar.textContent = "👤";
+      }
+    }
+
+    function giftName(gift) {
+      return gift.name || ("Подарок #" + String(gift.id).slice(-8));
+    }
+
+    function giftPrice(gift) {
+      if (gift.star_count !== undefined && gift.star_count !== null) {
+        return "⭐ " + gift.star_count + " Stars";
+      }
+      return "Цена не указана";
+    }
+
+    function giftCard(gift, mode) {
+      const card = document.createElement("article");
+      card.className = "gift";
+
+      const art = document.createElement("div");
+      art.className = "gift-art";
+
+      const emoji = document.createElement("div");
+      emoji.className = "gift-icon";
+      emoji.textContent = "🎁";
+
+      const idText = document.createElement("div");
+      idText.className = "gift-id";
+      idText.textContent = "ID: " + gift.id;
+
+      art.append(emoji, idText);
+
+      const name = document.createElement("div");
+      name.className = "gift-name";
+      name.textContent = giftName(gift);
+
+      const details = document.createElement("div");
+      details.className = "rarity";
+      details.textContent = giftPrice(gift);
+
+      card.append(art, name, details);
+
+      if (mode === "catalog") {
+        const button = document.createElement("button");
+
+        if (isCollected(gift.id)) {
+          button.className = "btn secondary";
+          button.textContent = "Уже в коллекции";
+          button.onclick = () => removeGift(gift.id);
+        } else {
+          button.className = "btn";
+          button.textContent = "В коллекцию";
+          button.onclick = () => addGift(gift.id);
+        }
+
+        card.appendChild(button);
+      }
+
+      if (mode === "collection") {
+        const actions = document.createElement("div");
+        actions.style.display = "grid";
+        actions.style.gap = "7px";
+
+        const pinButton = document.createElement("button");
+        pinButton.className = "btn secondary";
+        pinButton.textContent = isPinned(gift.id)
+          ? "Открепить"
+          : "Закрепить";
+
+        pinButton.onclick = () => togglePin(gift.id);
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "btn secondary";
+        removeButton.textContent = "Удалить";
+        removeButton.onclick = () => removeGift(gift.id);
+
+        actions.append(pinButton, removeButton);
+        card.appendChild(actions);
+      }
+
+      return card;
+    }
+
+    function renderCatalog() {
+      const container = document.getElementById("catalog");
+      const search = document.getElementById("searchInput").value
+        .trim().toLowerCase();
+
+      container.replaceChildren();
+
+      const filtered = gifts.filter(gift => {
+        const text = (giftName(gift) + " " + gift.id).toLowerCase();
+        return text.includes(search);
+      });
+
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = catalogError
+          ? "Каталог не загружен. Проверь сервер и нажми «Обновить»."
+          : gifts.length
+            ? "По запросу ничего не найдено."
+            : "Пока нет данных о подарках.";
+        container.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach(gift => {
+        container.appendChild(giftCard(gift, "catalog"));
+      });
+    }
+
+    function renderCollection() {
+      const container = document.getElementById("collection");
+      container.replaceChildren();
+
+      document.getElementById("collectionLabel").textContent =
+        collection.length + " подарков";
+
+      if (!collection.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent =
+          "Коллекция пока пустая. Перейди в каталог и добавь подарки.";
+        container.appendChild(empty);
+        return;
+      }
+
+      collection.forEach(item => {
+        const gift = getGift(item.id) || item;
+        container.appendChild(giftCard(gift, "collection"));
+      });
+    }
+
+    function renderPinned() {
+      const container = document.getElementById("pinnedPreview");
+      const wrap = document.getElementById("avatarWrap");
+
+      container.replaceChildren();
+
+      wrap.querySelectorAll(".ring-gift").forEach(el => el.remove());
+
+      const pinned = collection.filter(g => g.pinned).slice(0, 6);
+
+      document.getElementById("pinnedCount").textContent = pinned.length;
+      document.getElementById("pinnedLabel").textContent =
+        pinned.length + " / 6";
+
+      pinned.forEach((item, index) => {
+        const angle = (-90 + index * (360 / Math.max(pinned.length, 1)))
+          * Math.PI / 180;
+
+        const badge = document.createElement("div");
+        badge.className = "ring-gift";
+        badge.textContent = "🎁";
+
+        badge.style.left = (47 + Math.cos(angle) * 49) + "%";
+        badge.style.top = (47 + Math.sin(angle) * 49) + "%";
+        badge.style.transform = "translate(-50%, -50%)";
+
+        wrap.appendChild(badge);
+
+        const gift = getGift(item.id) || item;
+        container.appendChild(giftCard(gift, "preview"));
+      });
+
+      if (!pinned.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Здесь появятся закреплённые подарки.";
+        container.appendChild(empty);
+      }
+    }
+
+    function renderAll() {
+      document.getElementById("collectionCount").textContent =
+        collection.length;
+
+      renderCatalog();
+      renderCollection();
+      renderPinned();
+    }
+
+    function addGift(id) {
+      const gift = getGift(id);
+      if (!gift || isCollected(id)) return;
+
+      collection.push({
+        id: String(gift.id),
+        name: gift.name || "",
+        star_count: gift.star_count ?? null,
+        pinned: false
+      });
+
+      saveCollection();
+    }
+
+    function removeGift(id) {
+      collection = collection.filter(g => String(g.id) !== String(id));
+      saveCollection();
+    }
+
+    function togglePin(id) {
+      const item = collection.find(g => String(g.id) === String(id));
+      if (!item) return;
+
+      if (!item.pinned) {
+        const currentPinned = collection.filter(g => g.pinned).length;
+
+        if (currentPinned >= 6) {
+          alert("Можно закрепить не больше 6 подарков.");
+          return;
+        }
+      }
+
+      item.pinned = !item.pinned;
+      saveCollection();
+    }
+
+    function clearCollection() {
+      if (!confirm("Точно очистить всю коллекцию на этом устройстве?")) {
+        return;
+      }
+
+      collection = [];
+      saveCollection();
+    }
+
+    async function loadGifts() {
+      const status = document.getElementById("catalogStatus");
+      const serverStatus = document.getElementById("serverStatus");
+
+      status.textContent = "Загружаем каталог с сервера...";
+      serverStatus.textContent = "Проверяем соединение с сервером...";
+
+      try {
+        const response = await fetch(API_URL + "/api/gifts");
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.gifts)) {
+          throw new Error(data.error || "Сервер не вернул список подарков");
+        }
+
+        gifts = data.gifts.map(g => ({
+          id: String(g.id),
+          name: g.title || g.name || "",
+          star_count: g.star_count ?? null,
+          file_id: g.sticker?.file_id || g.file_id || null
+        }));
+
+        catalogError = "";
+
+        status.textContent =
+          "Загружено подарков: " + gifts.length +
+          (data.source ? " · Источник: " + data.source : "");
+
+        serverStatus.textContent = "Соединение с сервером работает.";
+
+        renderAll();
+      } catch (error) {
+        console.error("CIVILIZATION API error:", error);
+
+        catalogError = error.message || "Ошибка соединения";
+        status.textContent = "Не удалось загрузить каталог.";
+        serverStatus.textContent =
+          "Ошибка соединения. Проверь, работает ли Render-сервер.";
+
+        renderCatalog();
+      }
+    }
+
+    document.getElementById("searchInput").addEventListener("input", renderCatalog);
+
+    updateTelegramProfile();
+    renderAll();
+    loadGifts();
+  </script>
 </body>
 </html>
-
